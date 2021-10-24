@@ -4,8 +4,8 @@ const jwt = require('jsonwebtoken');
 const { TOKEN_SECRET, COOKIE_NAME } = require('../config')
 const userService = require('../services/userService');
 
-function init() {
-    return function (req, res, next) {
+
+module.exports = () =>  function (req, res, next) {
         //TODO parse jwt
         //attach functions to context
 
@@ -25,7 +25,7 @@ function init() {
 
         next();
     };
-}
+
 
 async function register(username, password) {
     //TODO adapt parameters to project requirements
