@@ -23,9 +23,7 @@ router.post(
                 //TO DO IMPROVE ERROR MSG
                 throw new Error('Validation error');
             }
-
             await req.auth.register(req.body.username, req.body.password);
-
             res.redirect('/'); //TO DO CHANGE REDIRECT
 
         } catch (err) {

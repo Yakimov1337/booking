@@ -15,7 +15,7 @@ module.exports = () =>  function (req, res, next) {
                 res.cookie(COOKIE_NAME, token);
             },
             async login(username, password) {
-                const token = await register(username, password);
+                const token = await login(username, password);
                 res.cookie(COOKIE_NAME, token);
             },
             logout() {
@@ -62,8 +62,8 @@ async function login(username, password) {
 
 function generateToken(userData) {
     return jwt.sign({
-        _id: user._id,
-        username: user.username
+        _id: userData._id,
+        username: userData.username
     }, TOKEN_SECRET);
 
 }
