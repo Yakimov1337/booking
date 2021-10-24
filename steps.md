@@ -4,9 +4,9 @@
 [x] Initialize NPM project
 [x] Install libraries
 [x] Include resources (HTML & CSS, etc.)
-[] Arrange templates (without editing)
-[] Create initialization files
-[] - index - create and start (express) application 
+[x] Arrange templates (without editing)
+[x] Create initialization files
+[x] - index - create and start (express) application 
 [] - config files - database connect (mongoose), Express middlewares (body-parser, static), external middlewares (cookie parser, brcypt, jwt)
 [] Create generic User model
 [] Create user service and auth middleware 
