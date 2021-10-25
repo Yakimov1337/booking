@@ -3,12 +3,13 @@ const { body, validationResult } = require('express-validator');
 const {isGuest} = require('../middlewares/guards');
 
 router.get('/register', isGuest(), (req, res) => {
-    res.render('register');
+    res.render('user/register');
 });
 
 router.post(
     '/register',
     isGuest(),
+    body('email', 'Invalid email').isEmail(),
     body('username').isLength({ min: 3 }).withMessage("Username is too short!"), //CHANGE ACCORDING TO REQ
     body('rePass').custom((value, { req }) => {
         if (value != req.body.password) {
@@ -25,7 +26,7 @@ router.post(
                 //TO DO IMPROVE ERROR MSG
                 throw new Error('Validation error');
             }
-            await req.auth.register(req.body.username, req.body.password);
+            await req.auth.register(req.body.username,req.body.email, req.body.password);
             res.redirect('/'); //TO DO CHANGE REDIRECT
 
         } catch (err) {
@@ -36,21 +37,21 @@ router.post(
                     username: req.body.username
                 }
             }
-            res.render('register', ctx);
+            res.render('user/register', ctx);
         }
 
     }
 )
 
 router.get('/login',isGuest(), (req, res) => {
-    res.render('login');
+    res.render('user/login');
 });
 
 router.post('/login', isGuest(), async (req, res) => {
     try {
         await req.auth.login(req.body.username, req.body.password);
         res.redirect('/') //TODO CHANGE REDIRECT IF NEEDED
-    } catch {
+    } catch (err){
         console.log(err.message);
         const ctx = {
             errors: [err.message],
@@ -58,7 +59,7 @@ router.post('/login', isGuest(), async (req, res) => {
                 username: req.body.username
             }
         }
-        res.render('login', ctx);
+        res.render('user/login', ctx);
     }
 });
 
