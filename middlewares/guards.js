@@ -3,7 +3,7 @@ function isUser() {
         if (req.user) {
             next();
         } else {
-            res.redicrect('/auth/login');
+            res.redirect('/auth/login');
         }
     };
 }
@@ -13,7 +13,7 @@ function isGuest() {
         if (!req.user) {
             next();
         } else {
-            res.redicrect('/auth/login');
+            res.redirect('/auth/login');
         }
     };
 }
