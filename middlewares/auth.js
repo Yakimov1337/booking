@@ -31,7 +31,7 @@ async function register(username, email, password) {
     //TODO adapt parameters to project requirements
     //extra validations
     const existingUsername = await userService.getUserByUsername(username);
-    const existingEmail = await userService.getUserByUsername(email);
+    const existingEmail = await userService.getUserByEmail(email);
 
     if (existingUsername) {
         throw new Error('Username is taken!');
