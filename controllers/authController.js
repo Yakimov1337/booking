@@ -11,6 +11,7 @@ router.post(
     isGuest(),
     body('email', 'Invalid email').isEmail(),
     body('username').isLength({ min: 3 }).withMessage("Username is too short!"), //CHANGE ACCORDING TO REQ
+    body('password').isLength({min: 5}).withMessage("Passowrd must be atleast 5 symbols long").bail().matches(/[a-zA-Z0-9]/).withMessage('Passwords must contain onyl numbers and letters'),
     body('rePass').custom((value, { req }) => {
         if (value != req.body.password) {
             throw new Error('Passwords dont match');
@@ -23,8 +24,8 @@ router.post(
 
         try {
             if (errors.length > 0) {
-                //TO DO IMPROVE ERROR MSG
-                throw new Error('Validation error');
+                const msg = errors.map(e=> e.msg).join('\n');
+                throw new Error(msg);
             }
             await req.auth.register(req.body.username,req.body.email, req.body.password);
             res.redirect('/'); //TO DO CHANGE REDIRECT
@@ -32,7 +33,7 @@ router.post(
         } catch (err) {
             console.log(err.message);
             const ctx = {
-                errors,
+                errors: err.message.split('\n'),
                 userData: {
                     username: req.body.username
                 }
@@ -56,7 +57,8 @@ router.post('/login', isGuest(), async (req, res) => {
         const ctx = {
             errors: [err.message],
             userData: {
-                username: req.body.username
+                username: req.body.username,
+                email: req.body.email
             }
         }
         res.render('user/login', ctx);
