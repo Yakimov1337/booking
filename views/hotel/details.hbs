@@ -12,7 +12,7 @@
                 {{hotel.city}}
             </div>
             <p><span>Free rooms: {{hotel.rooms}}</span> </p>
-            {{#if hotel.hasUSer}}
+            {{#if hotel.hasUser}}
             {{#if hotel.isAuthor}}
             <a href="/hotels/edit/{{hotel._id}}" class="edit">Edit</a>
             <a href="/hotels/delete/{{hotel._id}}" class="remove">Delete</a>
