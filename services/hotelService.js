@@ -22,27 +22,34 @@ async function getHotelById(id) {
 }
 
 async function editHotel(id, hotelData) {
-const hotel = await Hote.findById(id);
+    const hotel = await Hotel.findById(id);
 
-hotel.name = hotelData.name;
-hotel.city = hotelData.city;
-hotel.rooms = Number(hotelData.rooms);
-hotel.imageUrl = hotelData.imageUrl;
+    hotel.name = hotelData.name;
+    hotel.city = hotelData.city;
+    hotel.rooms = Number(hotelData.rooms);
+    hotel.imageUrl = hotelData.imageUrl;
 
-return hotel.save();
+    return hotel.save();
 
 }
 
 async function bookHotel(hotelId, userId) {
-    const hotel =await Hotel.findById(hotelId);
+    const hotel = await Hotel.findById(hotelId);
     const user = await User.findById(userId);
 
-        if (user._id==hotel.owner) {
-            throw new Error('Cannot book your own hotel!');
-        }
-        
+    if (user._id == hotel.owner) {
+        throw new Error('Cannot book your own hotel!');
+    }
+
     user.bookedHotels.push(hotelId);
-    return user.save();
+    hotel.bookedBy.push(user);
+    hotel.rooms -= 1;
+ 
+    return Promise.all([user.save(), hotel.save()]);
+}
+
+async function deleteHotel(hotelId) {
+    await Hotel.findByIdAndDelete(hotelId);
 }
 
 module.exports = {
@@ -50,5 +57,6 @@ module.exports = {
     getAllHotels,
     getHotelById,
     editHotel,
-    bookHotel
+    bookHotel,
+    deleteHotel
 }
