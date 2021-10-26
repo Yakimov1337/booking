@@ -46,13 +46,16 @@ router.post('/create', isUser(), async (req, res) => {
 router.get('/details/:id', async (req, res) => {
     try {
         const hotel = await req.storage.getHotelById(req.params.id);
-        hotel.hasUser = Boolean(req.user);
-        hotel.isAuthor = req.user && req.user._id == hotel.owner;
-        hotel.isBooked = req.user && hotel.bookedBy.find(x=> x==req.user._id);
-        console.log(req.user._id);
-        console.log(hotel.owner);
-        console.log(hotel);
+        if(req.user){
+            hotel.hasUser = Boolean(req.user);
+            hotel.isAuthor = req.user && req.user._id == hotel.owner;
+            hotel.isBooked = req.user && hotel.bookedBy.find(x => x == req.user._id);
+        }
         
+        // console.log(req.user._id);
+        // console.log(hotel.owner);
+        // console.log(hotel);
+
         res.render('hotel/details', { hotel });
     } catch (err) {
         console.log(err.message);
@@ -63,10 +66,10 @@ router.get('/details/:id', async (req, res) => {
 router.get('/edit/:id', isUser(), async (req, res) => {
     try {
         const hotel = await req.storage.getHotelById(req.params.id);
-        if (req.user._id!=hotel.owner) {
+        if (req.user._id != hotel.owner) {
             throw new Error('Cannot edit hotel you haven\'t created!');
         }
-        res.render('hote/edit', {hotel});
+        res.render('hotel/edit', { hotel });
     } catch (err) {
         console.log(err.message);
         res.redirect('/');
@@ -76,7 +79,7 @@ router.get('/edit/:id', isUser(), async (req, res) => {
 router.post('/edit/:id', isUser(), async (req, res) => {
     try {
         const hotel = await req.storage.getHotelById(req.params.id);
-        if (req.user._id!=hotel.owner) {
+        if (req.user._id != hotel.owner) {
             throw new Error('Cannot edit hotel you haven\'t created!');
         }
 
@@ -107,20 +110,26 @@ router.post('/edit/:id', isUser(), async (req, res) => {
     }
 });
 
-router.get('/book/:id', isUser(), async (req,res)=>{
-    try{
+router.get('/book/:id', isUser(), async (req, res) => {
+    try {
         const hotel = await req.storage.getHotelById(req.params.id);
-        if (req.user._id==hotel.owner) {
+        if (req.user._id == hotel.owner) {
             throw new Error('Cannot book your own hotel!');
         }
+        req.storage.bookHotel(req.params.id, req.user._id)
+            .then((user, hotel) => {
+                res.redirect('/hotels/details/' + req.params.id);
+            });
 
-        await req.storage.bookHotel(req.params.id, req.user._id);
-        res.redirect('/hotels/details/', +req.params._id);
-
-    }catch(err){
+    } catch (err) {
         console.log(err.message);
         res.redirect('/');
     }
+});
+
+router.get('/delete/:hotelId', async (req, res) => {
+    await req.storage.deleteHotel(req.params.hotelId);
+    res.redirect('/');
 });
 
 
