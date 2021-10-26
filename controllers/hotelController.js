@@ -48,9 +48,10 @@ router.get('/details/:id', async (req, res) => {
         const hotel = await req.storage.getHotelById(req.params.id);
         hotel.hasUser = Boolean(req.user);
         hotel.isAuthor = req.user && req.user._id == hotel.owner;
-        hotel.isBooked = req.user && hotel.bookedBy.find(x => x._id == req.user._id);
+        hotel.isBooked = req.user && hotel.bookedBy.find(x=> x==req.user._id);
         console.log(req.user._id);
         console.log(hotel.owner);
+        console.log(hotel);
         
         res.render('hotel/details', { hotel });
     } catch (err) {
@@ -104,7 +105,23 @@ router.post('/edit/:id', isUser(), async (req, res) => {
         }
         res.render('hotel/edit', ctx);
     }
-})
+});
+
+router.get('/book/:id', isUser(), async (req,res)=>{
+    try{
+        const hotel = await req.storage.getHotelById(req.params.id);
+        if (req.user._id==hotel.owner) {
+            throw new Error('Cannot book your own hotel!');
+        }
+
+        await req.storage.bookHotel(req.params.id, req.user._id);
+        res.redirect('/hotels/details/', +req.params._id);
+
+    }catch(err){
+        console.log(err.message);
+        res.redirect('/');
+    }
+});
 
 
 module.exports = router;
