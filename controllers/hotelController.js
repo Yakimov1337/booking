@@ -19,8 +19,6 @@ router.post('/create', isUser(), async (req, res) => {
         await req.storage.createHotel(hotelData);
         res.redirect('/');
     } catch (err) {
-        console.log(err.message);
-
         let errors;
         if (err.errors) {
             errors = Object.values(err.errors).map(e => e.properties.message);
@@ -30,28 +28,29 @@ router.post('/create', isUser(), async (req, res) => {
         }
 
         const ctx = {
-            error: errors,
+            errors: errors,
             hotelData: {
                 name: req.body.name,
                 city: req.body.city,
                 imageUrl: req.body.imageUrl,
                 rooms: req.body.rooms,
             }
-        }
+        };
         res.render('hotel/create', ctx);
     }
 });
 
 
+
 router.get('/details/:id', async (req, res) => {
     try {
         const hotel = await req.storage.getHotelById(req.params.id);
-        if(req.user){
+        if (req.user) {
             hotel.hasUser = Boolean(req.user);
             hotel.isAuthor = req.user && req.user._id == hotel.owner;
             hotel.isBooked = req.user && hotel.bookedBy.find(x => x == req.user._id);
         }
-        
+
         // console.log(req.user._id);
         // console.log(hotel.owner);
         // console.log(hotel);
@@ -76,6 +75,7 @@ router.get('/edit/:id', isUser(), async (req, res) => {
     }
 });
 
+
 router.post('/edit/:id', isUser(), async (req, res) => {
     try {
         const hotel = await req.storage.getHotelById(req.params.id);
@@ -86,8 +86,6 @@ router.post('/edit/:id', isUser(), async (req, res) => {
         await req.storage.editHotel(req.params.id, req.body);
         res.redirect('/');
     } catch (err) {
-        console.log(err.message);
-
         let errors;
         if (err.errors) {
             errors = Object.values(err.errors).map(e => e.properties.message);
@@ -97,7 +95,7 @@ router.post('/edit/:id', isUser(), async (req, res) => {
         }
 
         const ctx = {
-            error: errors,
+            errors: errors,
             hotel: {
                 _id: req.params.id,
                 name: req.body.name,
