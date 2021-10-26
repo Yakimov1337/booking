@@ -16,19 +16,24 @@ async function createUser(username,email,hashedPassword) {
 
 async function getUserByUsername(username) {
     const pattern = new RegExp(`^${username}$`, 'i');
-    const user = await User.findOne({ username: { $regex: username, $options: pattern} });
+    const user = await User.findOne({ username: { $regex: pattern} });
     return user;
 }
 
 async function getUserByEmail(email) {
     const pattern = new RegExp(`^${email}$`, 'i');
-    const user = await User.findOne({ email: { $regex: email, $options: pattern} });
+    const user = await User.findOne({ email: { $regex:  pattern} });
     return user;
 }
 
+async function getBookedHotels(userId){
+    const hotels = User.findById(userId);
+    return hotels.populate('bookedHotels').lean();
+}
 
 module.exports = {
     createUser,
     getUserByUsername,
-    getUserByEmail
+    getUserByEmail,
+    getBookedHotels
 };
